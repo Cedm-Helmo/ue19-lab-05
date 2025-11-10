@@ -20,4 +20,4 @@ try:
     print(f"Le prix de l'actif financier {Symbol} est actuellement à {close}$. Il a ouvert à {Open}$, a atteint un plus "
           f"haut de {high}$ et un plus bas de {low}$ aujourd'hui.")
 except:
-    print("Impossible de charger l'api")
+    print("Erreur : Impossible de charger l'api")
