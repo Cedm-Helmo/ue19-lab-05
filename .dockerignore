@@ -29,3 +29,7 @@ __pycache__
 
 # Fichiers de workflow GitHub
 .github/workflows
+
+# NOUVEAU : Exclusions de chemin très spécifiques pour forcer l'ignorance
+*/AppData/
+*/VMwareDnD/
