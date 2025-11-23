@@ -1,55 +1,62 @@
 name: Docker Publish to GHCR
 
 on:
-  push:
-    branches: [ "main" ] # Déclenche le workflow à chaque push sur la branche 'main'
+push:
+branches: [ "main" ] # Déclenche le workflow à chaque push sur la branche 'main'
 
 env:
-  # L'URL du Container Registry de GitHub
-  REGISTRY: ghcr.io
-  # Nom de l'image (doit inclure le propriétaire/nom-du-repo, par exemple mon-utilisateur/mon-repo)
-  IMAGE_NAME: ${{ github.repository }}
+
+L'URL du Container Registry de GitHub
+
+REGISTRY: ghcr.io
+
+Nom de l'image (doit inclure le propriétaire/nom-du-repo, par exemple mon-utilisateur/mon-repo)
+
+IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read # Lecture des fichiers du dépôt
-      packages: write # Nécessaire pour publier sur GitHub Packages
+build-and-push:
+runs-on: ubuntu-latest
+permissions:
+contents: read # Lecture des fichiers du dépôt
+packages: write # Nécessaire pour publier sur GitHub Packages
 
-    steps:
-      - name: Checkout repository
-        # Récupère le code source de votre dépôt
-        uses: actions/checkout@v4
+steps:
+  - name: Checkout repository
+    # Récupère le code source de votre dépôt
+    uses: actions/checkout@v4
 
-      - name: Log in to the Container Registry
-        # Se connecte au Container Registry de GitHub
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          # Utilise le nom de l'acteur (l'utilisateur qui a déclenché l'action)
-          username: ${{ github.actor }}
-          # Utilise le jeton GITHUB_TOKEN auto-généré pour l'authentification
-          password: ${{ secrets.GITHUB_TOKEN }}
+  - name: Set up Docker Buildx
+    uses: docker/setup-buildx-action@v3
+    
+  - name: Log in to the Container Registry
+    # Se connecte au Container Registry de GitHub
+    uses: docker/login-action@v3
+    with:
+      registry: ${{ env.REGISTRY }}
+      # Utilise le nom de l'acteur (l'utilisateur qui a déclenché l'action)
+      username: ${{ github.actor }}
+      # Utilise le jeton GITHUB_TOKEN auto-généré pour l'authentification
+      password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        # Génère des tags et des labels pour l'image Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha,prefix=sha- # Tag basé sur le SHA du commit
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }} # Tag 'latest' uniquement sur la branche main
+  - name: Extract metadata (tags, labels) for Docker
+    # Génère des tags et des labels pour l'image Docker
+    id: meta
+    uses: docker/metadata-action@v5
+    with:
+      images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      tags: |
+        type=sha,prefix=sha- # Tag basé sur le SHA du commit
+        type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }} # Tag 'latest' uniquement sur la branche main
 
-      - name: Build and push Docker image
-        # Construit l'image et la pousse vers le Container Registry de GitHub
-        uses: docker/build-push-action@v5
-        with:
-          context: . # Le contexte de construction est la racine du dépôt
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # Ajout des actions recommandées pour la compatibilité et la performance (setup-buildx)
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  - name: Build and push Docker image
+    # Construit l'image et la pousse vers le Container Registry de GitHub
+    uses: docker/build-push-action@v5
+    with:
+      context: . # Le contexte de construction est la racine du dépôt
+      push: true
+      tags: ${{ steps.meta.outputs.tags }}
+      labels: ${{ steps.meta.outputs.labels }}
+      # Utilisation du cache GHA avec un SCOPE spécifique pour plus de fiabilité
+      cache-from: type=gha,scope=${{ env.IMAGE_NAME }}
+      cache-to: type=gha,scope=${{ env.IMAGE_NAME }},mode=max
