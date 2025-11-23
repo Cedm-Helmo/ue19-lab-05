@@ -26,6 +26,10 @@ steps:
     # Récupère le code source de votre dépôt
     uses: actions/checkout@v4
 
+  # 
+  # ⚠️ ÉTAPE AJOUTÉE : Configuration de Buildx 
+  # Cette étape est essentielle pour utiliser le cache 'type=gha'
+  #
   - name: Set up Docker Buildx
     uses: docker/setup-buildx-action@v3
     
