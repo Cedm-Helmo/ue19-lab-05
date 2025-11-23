@@ -1,0 +1,31 @@
+# Fichiers et dossiers généraux à ignorer
+.git
+.gitignore
+.gitattributes
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers de configuration ou de build
+.vscode
+.idea
+.env
+*.lock
+/dist
+/build
+
+# Fichiers de test
+/test-reports
+
+# Fichiers temporaires Windows/macOS/Linux
+# Ceci résout l'erreur de chemin VMware/AppData
+Thumbs.db
+.DS_Store
+**/.DS_Store
+*~
+__pycache__
+*.pyc
+
+# Fichiers de workflow GitHub
+.github/workflows
