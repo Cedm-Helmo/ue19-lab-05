@@ -6,11 +6,7 @@ branches: [ "main" ] # Déclenche le workflow à chaque push sur la branche 'mai
 
 env:
 
-L'URL du Container Registry de GitHub
-
 REGISTRY: ghcr.io
-
-Nom de l'image (doit inclure le propriétaire/nom-du-repo, par exemple mon-utilisateur/mon-repo)
 
 IMAGE_NAME: ${{ github.repository }}
 
